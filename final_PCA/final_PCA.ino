@@ -1,31 +1,34 @@
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
-#include <Pixy2.h>
+//#include <Pixy2.h>
 
 // Create PCA9685 and Pixy2 objects
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(0x41);
-Pixy2 pixy;
+//Pixy2 pixy;
 
 // PCA9685 channels
 #define rc0    0   // Relay 0
 #define rc1    1   // Relay 1
-#define rc2    2   // Relay 2
-#define rc3    3   // Relay 3
+//#define rc2    2   // Relay 2
+//#define rc3    3   // Relay 3
+/*
 #define servo0 7   // Servo 0
 #define servo1 5   // Servo 1
 #define stepCh 13   // Stepper Step channel
 #define dirCh  14  // Stepper Direction channel
-
+*/
 // Relay states
 bool rs0 = false;
 bool rs1 = false;
-bool rs2 = false;
-bool rs3 = false;
+//bool rs2 = false;
+//bool rs3 = false;
 
+/*
 // Stepper motor state
 bool stepperRunning = false;
 bool stepperDir = true;
 
+*/
 void setup() 
 {
   Serial.begin(9600);
@@ -41,13 +44,13 @@ void setup()
   // OFF tick in duty cycle 
   pwm.setPWM(rc0, 0, 0);
   pwm.setPWM(rc1, 0, 0);
-  pwm.setPWM(rc2, 0, 0);
-  pwm.setPWM(rc3, 0, 0);
-  pwm.setPWM(stepCh, 0, 0);
-  pwm.setPWM(dirCh, 0, 0);
+  //pwm.setPWM(rc2, 0, 0);
+  //pwm.setPWM(rc3, 0, 0);
+  //pwm.setPWM(stepCh, 0, 0);
+  //pwm.setPWM(dirCh, 0, 0);
 
   // Initialize Pixy2
-  pixy.init();
+  //pixy.init();
 }
 
 void loop() 
@@ -60,12 +63,16 @@ void loop()
   if (pixy.ccc.numBlocks) {
     Serial.println("Detected by Pixy!");
     pixy.setLamp(0, 0);    // Lamp OFF after detection
-  } else {
+  } else {    
     Serial.println("Not Detected by Pixy");
   }
   
 */
   // Serial input to control devices
+
+  pwm.begin();
+  pwm.setPWMFreq(50);
+
   while (Serial.available()) 
   {
     char ch = Serial.read();
@@ -73,9 +80,28 @@ void loop()
     // Relay controls
     if (ch == '0') toggleRelay(rc0, rs0);
     if (ch == '1') toggleRelay(rc1, rs1);
-    if (ch == '2') toggleRelay(rc2, rs2);
-    if (ch == '3') toggleRelay(rc3, rs3);
+    /*if (ch == '2'){
+      pwm.setPWM(0,0,4095);
+      pwm.setPWM(1,0,4095);
+      pwm.setPWM(2,0,4095);
+      pwm.setPWM(3,0,4095);
+      pwm.setPWM(4,0,4095);
+      pwm.setPWM(5,0,4095);
+      pwm.setPWM(6,0,4095);
+      pwm.setPWM(7,0,4095);
+      pwm.setPWM(8,0,4095);
+      pwm.setPWM(9,0,4095);
+      pwm.setPWM(10,0,4095);
+      pwm.setPWM(11,0,4095);
+      pwm.setPWM(12,0,4095);
+      pwm.setPWM(13,0,4095);
+      pwm.setPWM(14,0,4095);
+      pwm.setPWM(15,0,4095);
+    }*/
 
+    //if (ch == '2') toggleRelay(rc2, rs2);
+    //if (ch == '3') toggleRelay(rc3, rs3);
+    /*
     // Servo sweep control
     if (ch == 'u') {
       sweepBothServos();
@@ -101,6 +127,7 @@ void loop()
       stopStepper();
       Serial.println("Stepper: Stopped");
     }
+    */
   }
 }
 
@@ -115,6 +142,7 @@ void toggleRelay(uint8_t channel, bool &state)
   Serial.println(state ? "ON" : "OFF");
 }
 
+/*
 // Function to set Servo Angle
 void setServoAngle(uint8_t channel, int angle) 
 {
@@ -152,3 +180,4 @@ void stopStepper() {
   pwm.setPWMFreq(50);                    // Reset frequency back for servo/relay
   stepperRunning = false;
 }
+*/
