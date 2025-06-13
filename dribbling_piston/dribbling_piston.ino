@@ -1,78 +1,49 @@
-//dribbling testing with pistion 
-int dir = 0; //direction pin 
-int pwm = 0; // pwm pin 
+// === Roller Control Using BTN7960 ===
 
-//int pflag = 0; // piston flag 
-/*
-int piston[2][2] = {
-  {26, 27},  // Piston A
-  {31, 30}   // Piston B
-};
-
-void pistons(){
-  if(pflag==0){
-    //extend pistons if retracted
-    for (int i = 0; i <2; i++){
-      digitalWrite(piston[i][0], HIGH); 
-      digitalWrite(piston[i][1], LOW); 
-    }
-    pflag =1;
-  }
-  //retracxt pistons if extended 
-  else if(pflag==1){
-    for (int i = 0; i <2; i++){
-      digitalWrite(piston[i][0], LOW); 
-      digitalWrite(piston[i][1], HIGH); 
-    }
-    pflag=0;
-  }
-}
-*/
-void rollers(){
-    digitalWrite(dir,HIGH);
-    analogWrite(pwm,255); // dribble - rollers downwards
-    delay(450); // wait for ball to bounce back 
-    digitalWrite(dir,LOW);
-    analogWrite(pwm,255); // reverse rooler upwards to catch the ball 
-    delay(2000);
-    analogWrite(pwm,0);
-    delay(1500);
-    //stop(); // stop rollers completely to hold the ball
-}
-
-void stop(){
-    analogWrite(pwm,0);
-}
+const int RPWM = 5;   // Motor forward (downward roll)
+const int LPWM = 4;   // Motor reverse (upward roll)
 
 void setup() {
   Serial.begin(9600);
 
-  pinMode(dir, OUTPUT);
-  pinMode(pwm, OUTPUT);
-/*
-  for (int i = 0; i < 2; i++) {
-    pinMode(piston[i][0], OUTPUT);  
-    pinMode(piston[i][1], OUTPUT);  
-  }
-*/
-  Serial.println("p - pistons \nr - rollers");
+  pinMode(RPWM, OUTPUT);
+  pinMode(LPWM, OUTPUT);
+
+  Serial.println("BTN7960 Roller Control Ready");
+  Serial.println("Send 'r' to run rollers, 's' to stop.");
+}
+
+void rollers() {
+  // Rollers run downward
+  analogWrite(RPWM, 255);   // Max forward speed
+  analogWrite(LPWM, 0);     
+  delay(450);              // Let ball bounce
+
+  // Reverse rollers to catch ball
+  analogWrite(RPWM, 0);     
+  analogWrite(LPWM, 255);   // Max reverse speed
+  delay(750);
+
+  stop();                   // Hold ball
+  delay(2000);
+}
+
+void stop() {
+  analogWrite(RPWM, 0);
+  analogWrite(LPWM, 0);
 }
 
 void loop() {
-  if (Serial.available()){
-    char ch = Serial.read();
-/*
-    if (ch == 'p'){
-      pistons();
-      Serial.println("Pistons toggled");
-    }
-*/
-    if (ch == 'r'){
-      rollers();
-      Serial.println("Dribbling start");
-    }
+  if (Serial.available()) {
 
-    else if(ch == 's')
-    stop();
+    char ch = Serial.read();
+
+    if (ch == 'r') {
+      Serial.println("Starting rollers...");
+      rollers();
+    } else if (ch == 's') {
+      Serial.println("Stopping rollers.");
+      stop();
+    }
   }
 }
